@@ -1,4 +1,4 @@
-const CACHE_NAME = 'windlog-cache-v3';
+const CACHE_NAME = 'windlog-cache-v4';
 const ASSETS = [
   './',
   './index.html',
