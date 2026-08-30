@@ -232,7 +232,10 @@
     <div class="gate-mark">✦ Windlog</div>
     <h1>Erst das Passwort,<br>dann der Wind.</h1>
     <p>Euer gemeinsames Surf-Tagebuch.</p>
-    <input type="password" id="pwInput" placeholder="Passwort" autocomplete="current-password">
+    <div style="position:relative;">
+      <input type="password" id="pwInput" placeholder="Passwort" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" style="padding-right:70px;">
+      <button type="button" id="togglePwBtn" style="position:absolute; right:4px; top:4px; bottom:4px; width:62px; background:none; border:none; color: var(--wind); cursor:pointer; font-size:11px; text-transform:uppercase; letter-spacing:0.05em;">Zeigen</button>
+    </div>
     <button id="unlockBtn">Entsperren</button>
     <div id="gate-error"></div>
     <div id="gate-setup-note"></div>
@@ -424,7 +427,7 @@ if(!passwordConfigured()){
 }
 
 async function tryUnlock(){
-  const val = pwInput.value;
+  const val = pwInput.value.trim();
   if(!val){ gateError.textContent = 'Bitte Passwort eingeben.'; return; }
   if(!passwordConfigured()){
     gateError.textContent = 'Passwort ist noch nicht eingerichtet (siehe README).';
@@ -442,6 +445,17 @@ async function tryUnlock(){
 
 document.getElementById('unlockBtn').addEventListener('click', tryUnlock);
 pwInput.addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
+
+document.getElementById('togglePwBtn').addEventListener('click', () => {
+  const btn = document.getElementById('togglePwBtn');
+  if(pwInput.type === 'password'){
+    pwInput.type = 'text';
+    btn.textContent = 'Verbergen';
+  } else {
+    pwInput.type = 'password';
+    btn.textContent = 'Zeigen';
+  }
+});
 
 document.getElementById('lockBtn').addEventListener('click', () => {
   sessionStorage.removeItem(SESSION_KEY);
