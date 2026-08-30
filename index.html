@@ -99,17 +99,26 @@
 
   main{ max-width: 640px; margin: 0 auto; padding: 20px; }
 
-  .rose-card{
+  .progress-card{
     background: rgba(247,249,247,0.04); border: 1px solid var(--line);
     border-radius: 20px; padding: 20px; margin-bottom: 22px;
-    display:flex; gap:20px; align-items:center;
   }
-  .rose-card svg{ flex-shrink:0; }
-  .rose-stats{ flex:1; }
-  .rose-stats .big{ font-family:'Fraunces'; font-size: 28px; line-height:1; }
-  .rose-stats .lbl{ color: var(--text-dim); font-size: 11.5px; text-transform:uppercase; letter-spacing:0.08em; margin-top:4px;}
-  .rose-stats .row{ margin-bottom: 12px; }
-  .rose-stats .row:last-child{ margin-bottom:0; }
+  .progress-stats{ display:flex; gap: 28px; margin-bottom: 20px; }
+  .progress-stats .big{ font-family:'Fraunces'; font-size: 26px; line-height:1; }
+  .progress-stats .lbl{ color: var(--text-dim); font-size: 11px; text-transform:uppercase; letter-spacing:0.08em; margin-top:4px;}
+
+  .progress-sub-title{
+    font-size: 10.5px; text-transform:uppercase; letter-spacing:0.09em;
+    color: var(--wind); font-weight:600; margin-bottom: 10px;
+  }
+  .heatmap-grid{
+    display:grid; grid-template-columns: repeat(13, 1fr); gap: 3px; margin-bottom: 22px;
+  }
+  .heatmap-cell{ aspect-ratio: 1; border-radius: 3px; }
+  .heatmap-legend{ display:flex; align-items:center; gap:5px; margin-top:8px; font-size:10.5px; color: var(--text-dim); }
+  .heatmap-legend .sw{ width:10px; height:10px; border-radius:2px; }
+
+  .trend-empty{ font-size: 12.5px; color: var(--text-dim); padding: 8px 0; }
 
   .section-title{
     display:flex; justify-content:space-between; align-items:center;
@@ -211,7 +220,7 @@
   .sync-note{ text-align:center; color: var(--text-dim); font-size: 11px; margin-top: 18px; }
 
   @media (max-width: 420px){
-    .rose-card{ flex-direction:column; }
+    .heatmap-grid{ grid-template-columns: repeat(10, 1fr); }
     .form-grid{ grid-template-columns: 1fr; }
   }
 </style>
@@ -256,18 +265,32 @@
   </header>
 
   <main>
-    <div class="rose-card">
-      <svg id="roseSvg" width="120" height="120" viewBox="0 0 120 120"></svg>
-      <div class="rose-stats">
-        <div class="row">
+    <div class="progress-card">
+      <div class="progress-stats">
+        <div>
           <div class="big" id="statAvgWind">–</div>
           <div class="lbl">Ø Windstärke (kn)</div>
         </div>
-        <div class="row">
+        <div>
           <div class="big" id="statSessions">0</div>
           <div class="lbl">Sessions geloggt</div>
         </div>
       </div>
+
+      <div class="progress-sub-title">Session-Kalender (letzte 13 Wochen)</div>
+      <div class="heatmap-grid" id="heatmapGrid"></div>
+      <div class="heatmap-legend">
+        <span>Weniger</span>
+        <span class="sw" style="background:rgba(247,249,247,0.06);"></span>
+        <span class="sw" style="background:#D9C9A3;"></span>
+        <span class="sw" style="background:#E0A868;"></span>
+        <span class="sw" style="background:#E07A3F;"></span>
+        <span class="sw" style="background:#B85A24;"></span>
+        <span>Mehr Wind</span>
+      </div>
+
+      <div class="progress-sub-title" style="margin-top:22px;">Ø Windstärke im Verlauf</div>
+      <div id="trendWrap"><svg id="trendSvg" viewBox="0 0 340 110" style="width:100%; height:auto;"></svg></div>
     </div>
 
     <div class="section-title"><span id="formTitleLabel">Neue Session</span></div>
@@ -682,32 +705,98 @@ function subscribeRealtime(){
 }
 
 /* ---------------- Rendering ---------------- */
-function renderRose(entries){
-  const svg = document.getElementById('roseSvg');
-  const cx = 60, cy = 60, maxR = 46;
-  const dirs = ['N','NO','O','SO','S','SW','W','NW'];
-  const counts = {}; dirs.forEach(d => counts[d] = 0);
-  let totalWithDir = 0;
-  entries.forEach(en => { if(en.wind_direction && counts[en.wind_direction] !== undefined){ counts[en.wind_direction]++; totalWithDir++; } });
-  const maxCount = Math.max(1, ...Object.values(counts));
+function windBucket(kn){
+  if(kn == null || isNaN(kn)) return 0;
+  if(kn < 12) return 1;
+  if(kn < 18) return 2;
+  if(kn < 24) return 3;
+  return 4;
+}
+const HEAT_COLORS = ['rgba(247,249,247,0.06)', '#D9C9A3', '#E0A868', '#E07A3F', '#B85A24'];
 
-  let svgContent = `<circle cx="${cx}" cy="${cy}" r="${maxR}" fill="none" stroke="rgba(247,249,247,0.1)" stroke-width="1"/>`;
-  svgContent += `<circle cx="${cx}" cy="${cy}" r="${maxR*0.5}" fill="none" stroke="rgba(247,249,247,0.07)" stroke-width="1"/>`;
+function renderHeatmap(entries){
+  const grid = document.getElementById('heatmapGrid');
+  const days = 91; // 13 weeks
+  const today = new Date(); today.setHours(0,0,0,0);
 
-  dirs.forEach((d,i) => {
-    const angleDeg = -90 + i * 45;
-    const angleRad = angleDeg * Math.PI/180;
-    const r = totalWithDir ? (counts[d]/maxCount) * maxR : 0;
-    const x = cx + r * Math.cos(angleRad);
-    const y = cy + r * Math.sin(angleRad);
-    if(r > 2){
-      svgContent += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#E07A3F" stroke-width="7" stroke-linecap="round" opacity="0.85"/>`;
-    }
-    const lx = cx + (maxR+12) * Math.cos(angleRad);
-    const ly = cy + (maxR+12) * Math.sin(angleRad);
-    svgContent += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="rgba(247,249,247,0.55)" font-size="9" font-family="Inter" text-anchor="middle" dominant-baseline="middle">${d}</text>`;
+  // max wind per day (local date string yyyy-mm-dd)
+  const perDay = {};
+  entries.forEach(en => {
+    if(!en.entry_date) return;
+    const kn = parseFloat(en.wind_kn);
+    if(isNaN(kn)) return;
+    if(!perDay[en.entry_date] || kn > perDay[en.entry_date]) perDay[en.entry_date] = kn;
   });
-  svg.innerHTML = svgContent;
+
+  const cells = [];
+  for(let i = days - 1; i >= 0; i--){
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0,10);
+    const bucket = perDay[key] !== undefined ? windBucket(perDay[key]) : 0;
+    const label = d.toLocaleDateString('de-DE', {day:'numeric', month:'short'}) + (perDay[key] !== undefined ? ` · ${perDay[key]} kn` : ' · keine Session');
+    cells.push({ bucket, label });
+  }
+
+  grid.innerHTML = cells.map(c =>
+    `<div class="heatmap-cell" style="background:${HEAT_COLORS[c.bucket]};" title="${escapeHtml(c.label)}"></div>`
+  ).join('');
+}
+
+function renderTrend(entries){
+  const wrap = document.getElementById('trendWrap');
+  const svg = document.getElementById('trendSvg');
+
+  // group by year-month, average wind_kn
+  const byMonth = {};
+  entries.forEach(en => {
+    if(!en.entry_date) return;
+    const kn = parseFloat(en.wind_kn);
+    if(isNaN(kn)) return;
+    const monthKey = en.entry_date.slice(0,7); // yyyy-mm
+    if(!byMonth[monthKey]) byMonth[monthKey] = [];
+    byMonth[monthKey].push(kn);
+  });
+  const months = Object.keys(byMonth).sort();
+  const points = months.map(m => ({
+    month: m,
+    avg: byMonth[m].reduce((a,b)=>a+b,0) / byMonth[m].length
+  }));
+
+  if(points.length < 2){
+    wrap.innerHTML = '<div class="trend-empty">Noch nicht genug Daten für einen Trend — sammelt ein paar Sessions mit Windangabe über mehrere Monate.</div>';
+    return;
+  }
+  if(!document.getElementById('trendSvg')){
+    wrap.innerHTML = '<svg id="trendSvg" viewBox="0 0 340 110" style="width:100%; height:auto;"></svg>';
+  }
+  const svgEl = document.getElementById('trendSvg');
+
+  const w = 340, h = 110, padL = 30, padR = 10, padT = 10, padB = 20;
+  const vals = points.map(p => p.avg);
+  const max = Math.ceil(Math.max(...vals) + 2);
+  const min = Math.max(0, Math.floor(Math.min(...vals) - 2));
+
+  const pts = points.map((p,i) => {
+    const x = padL + i * (w - padL - padR) / (points.length - 1);
+    const y = h - padB - ((p.avg - min) / (max - min || 1)) * (h - padT - padB);
+    return { x, y, ...p };
+  });
+
+  const pathD = pts.map((p,i) => (i===0?'M':'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+
+  let svgContent = `<line x1="${padL}" y1="${h-padB}" x2="${w-padR}" y2="${h-padB}" stroke="rgba(247,249,247,0.15)" stroke-width="1"/>`;
+  svgContent += `<path d="${pathD}" fill="none" stroke="#E07A3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  pts.forEach(p => {
+    svgContent += `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="#E07A3F"/>`;
+  });
+  const firstLabel = new Date(pts[0].month + '-01').toLocaleDateString('de-DE', {month:'short', year:'2-digit'});
+  const lastLabel = new Date(pts[pts.length-1].month + '-01').toLocaleDateString('de-DE', {month:'short', year:'2-digit'});
+  svgContent += `<text x="${padL}" y="${h-4}" fill="rgba(247,249,247,0.45)" font-size="9" font-family="Inter">${firstLabel}</text>`;
+  svgContent += `<text x="${w-padR-24}" y="${h-4}" fill="rgba(247,249,247,0.45)" font-size="9" font-family="Inter">${lastLabel}</text>`;
+  svgContent += `<text x="2" y="${padT+4}" fill="rgba(247,249,247,0.45)" font-size="9" font-family="Inter">${max}kn</text>`;
+  svgContent += `<text x="2" y="${h-padB+2}" fill="rgba(247,249,247,0.45)" font-size="9" font-family="Inter">${min}kn</text>`;
+  svgEl.innerHTML = svgContent;
 }
 
 function renderStats(entries){
@@ -835,7 +924,8 @@ function escapeHtml(str){
 }
 
 function renderAll(entries){
-  renderRose(entries);
+  renderHeatmap(entries);
+  renderTrend(entries);
   renderStats(entries);
   renderList(sortEntries(entries));
 }
