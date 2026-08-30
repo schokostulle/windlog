@@ -375,7 +375,6 @@ function requireSupabase(){
   return supabaseClient;
 }
 
-const PW_HASH_KEY = 'windlog_pw_hash_v1';
 const SESSION_KEY = 'windlog_unlocked';
 const USERNAME_KEY = 'windlog_username_v1';
 
@@ -394,22 +393,22 @@ const pwInput = document.getElementById('pwInput');
 const gateError = document.getElementById('gate-error');
 const setupNote = document.getElementById('gate-setup-note');
 
-function hasStoredPw(){ return !!localStorage.getItem(PW_HASH_KEY); }
-function refreshGateCopy(){
-  setupNote.textContent = hasStoredPw() ? '' : 'Noch kein Passwort auf diesem Gerät gesetzt — was du hier eingibst, wird zum Passwort. Nutze dasselbe Wort auf allen Geräten.';
+function passwordConfigured(){
+  return !!window.WINDLOG_PASSWORD_HASH && !window.WINDLOG_PASSWORD_HASH.includes('HASH-HIER-EINFUEGEN');
 }
-refreshGateCopy();
+if(!passwordConfigured()){
+  setupNote.textContent = '⚠ Es ist noch kein Passwort in config.js eingerichtet. Siehe README, Abschnitt "Passwort einrichten".';
+}
 
 async function tryUnlock(){
   const val = pwInput.value;
   if(!val){ gateError.textContent = 'Bitte Passwort eingeben.'; return; }
-  const hash = await sha256(val);
-  if(!hasStoredPw()){
-    localStorage.setItem(PW_HASH_KEY, hash);
-    afterUnlock();
+  if(!passwordConfigured()){
+    gateError.textContent = 'Passwort ist noch nicht eingerichtet (siehe README).';
     return;
   }
-  if(hash === localStorage.getItem(PW_HASH_KEY)){
+  const hash = await sha256(val);
+  if(hash === window.WINDLOG_PASSWORD_HASH){
     sessionStorage.setItem(SESSION_KEY, '1');
     afterUnlock();
   } else {
@@ -440,7 +439,7 @@ function afterUnlock(){
   }
 }
 
-if(sessionStorage.getItem(SESSION_KEY) === '1' && hasStoredPw()){
+if(sessionStorage.getItem(SESSION_KEY) === '1' && passwordConfigured()){
   afterUnlock();
 }
 
