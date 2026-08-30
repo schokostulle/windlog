@@ -47,7 +47,7 @@
     position: fixed; inset:0;
     display:flex; align-items:center; justify-content:center;
     background: radial-gradient(ellipse at 50% 20%, var(--sea) 0%, var(--sea-deep) 70%);
-    padding: 24px;
+    padding: calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
     z-index: 50;
   }
   .gate-card{ width: 100%; max-width: 360px; text-align:center; }
@@ -82,9 +82,10 @@
   .name-chip:hover{ border-color: var(--wind); }
 
   /* ---------- App shell ---------- */
-  #app{ display:none; padding-bottom: 60px; }
+  #app{ display:none; padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
   header.topbar{
-    padding: 16px 20px; display:flex; align-items:center; justify-content:space-between;
+    padding: calc(16px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right)) 16px calc(20px + env(safe-area-inset-left));
+    display:flex; align-items:center; justify-content:space-between;
     border-bottom: 1px solid var(--line);
     background: linear-gradient(180deg, var(--sea) 0%, var(--sea-deep) 100%);
     position: sticky; top:0; z-index:10;
@@ -233,8 +234,13 @@
     <h1>Erst das Passwort,<br>dann der Wind.</h1>
     <p>Euer gemeinsames Surf-Tagebuch.</p>
     <div style="position:relative;">
-      <input type="password" id="pwInput" placeholder="Passwort" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" style="padding-right:70px;">
-      <button type="button" id="togglePwBtn" style="position:absolute; right:4px; top:4px; bottom:4px; width:62px; background:none; border:none; color: var(--wind); cursor:pointer; font-size:11px; text-transform:uppercase; letter-spacing:0.05em;">Zeigen</button>
+      <input type="password" id="pwInput" placeholder="Passwort" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" style="padding-right:46px;">
+      <button type="button" id="togglePwBtn" aria-label="Passwort anzeigen" style="position:absolute; right:2px; top:2px; bottom:2px; width:40px; display:flex; align-items:center; justify-content:center; background:none; border:none; color: var(--text-dim); cursor:pointer;">
+        <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
     </div>
     <button id="unlockBtn">Entsperren</button>
     <div id="gate-error"></div>
@@ -243,7 +249,7 @@
   </div>
 </div>
 
-<div id="nameGate" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background: radial-gradient(ellipse at 50% 20%, var(--sea) 0%, var(--sea-deep) 70%); padding:24px; z-index:45;">
+<div id="nameGate" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background: radial-gradient(ellipse at 50% 20%, var(--sea) 0%, var(--sea-deep) 70%); padding: calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left)); z-index:45;">
   <div class="gate-card">
     <div class="gate-mark">✦ Windlog</div>
     <h1>Wer bist du?</h1>
@@ -448,12 +454,15 @@ pwInput.addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); })
 
 document.getElementById('togglePwBtn').addEventListener('click', () => {
   const btn = document.getElementById('togglePwBtn');
+  const icon = document.getElementById('eyeIcon');
   if(pwInput.type === 'password'){
     pwInput.type = 'text';
-    btn.textContent = 'Verbergen';
+    btn.setAttribute('aria-label', 'Passwort verbergen');
+    icon.innerHTML = '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.06-5.94"/><path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.77 21.77 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
   } else {
     pwInput.type = 'password';
-    btn.textContent = 'Zeigen';
+    btn.setAttribute('aria-label', 'Passwort anzeigen');
+    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
   }
 });
 
