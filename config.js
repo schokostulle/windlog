@@ -20,4 +20,4 @@ window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXB
 // 4. Enter drücken. Es erscheint eine lange Zeichenfolge (der Hash) - die kopierst
 //    du hier unten rein.
 
-window.WINDLOG_PASSWORD_HASH = 'HASH-HIER-EINFUEGEN';
+window.WINDLOG_PASSWORD_HASH = 'fb05cada665f946259fc894c0c66015d560c2db415c05d32973508c8c985b8bb';
