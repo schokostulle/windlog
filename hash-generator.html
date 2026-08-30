@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Windlog — Passwort-Hash erzeugen</title>
+<style>
+  :root{
+    --sea: #0F3D3E; --sea-deep: #0A2B2C; --foam: #F7F9F7;
+    --rust: #E07A3F; --wind: #8FBFBF; --line: rgba(247,249,247,0.12);
+    --text-dim: rgba(247,249,247,0.62);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background: radial-gradient(ellipse at 50% 20%, var(--sea) 0%, var(--sea-deep) 70%);
+    color: var(--foam); font-family: system-ui, sans-serif; padding: 24px;
+  }
+  .card{ width:100%; max-width: 420px; }
+  h1{ font-size: 22px; margin: 0 0 8px; }
+  p{ color: var(--text-dim); font-size: 14px; line-height:1.5; margin: 0 0 24px; }
+  input{
+    width:100%; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--line);
+    background: rgba(247,249,247,0.06); color: var(--foam); font-size: 16px; outline:none;
+    margin-bottom: 14px;
+  }
+  input:focus{ border-color: var(--wind); }
+  button{
+    width:100%; padding: 14px; border-radius: 12px; border:none;
+    background: var(--rust); color: var(--sea-deep); font-weight:700; font-size: 15px; cursor:pointer;
+  }
+  .result{
+    margin-top: 22px; padding: 16px; border-radius: 12px; border: 1px solid var(--line);
+    background: rgba(247,249,247,0.04); display:none;
+  }
+  .result.show{ display:block; }
+  .result label{ display:block; font-size: 11px; text-transform:uppercase; letter-spacing:0.06em; color: var(--wind); margin-bottom: 8px; }
+  .hash{ font-family: monospace; font-size: 13px; word-break: break-all; line-height:1.5; }
+  .copyBtn{
+    margin-top: 14px; background: none; border:1px solid var(--line); color: var(--foam);
+    padding: 10px; border-radius: 10px; font-size: 13px;
+  }
+  .copyBtn.copied{ border-color: var(--wind); color: var(--wind); }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Passwort-Hash erzeugen</h1>
+  <p>Gib euer gewünschtes gemeinsames Windlog-Passwort ein. Die Seite zeigt dir den dazugehörigen Hash — den trägst du in <code>config.js</code> bei <code>window.WINDLOG_PASSWORD_HASH</code> ein. Alles läuft nur in diesem Browser, nichts wird irgendwohin gesendet.</p>
+  <input type="text" id="pwInput" placeholder="Gewünschtes Passwort" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <button id="genBtn">Hash erzeugen</button>
+  <div class="result" id="result">
+    <label>Hash (in config.js einfügen)</label>
+    <div class="hash" id="hashOut"></div>
+    <button class="copyBtn" id="copyBtn">Kopieren</button>
+  </div>
+</div>
+<script>
+async function sha256(text){
+  const enc = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+document.getElementById('genBtn').addEventListener('click', async () => {
+  const val = document.getElementById('pwInput').value.trim();
+  if(!val) return;
+  const hash = await sha256(val);
+  document.getElementById('hashOut').textContent = hash;
+  document.getElementById('result').classList.add('show');
+});
+document.getElementById('pwInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') document.getElementById('genBtn').click();
+});
+document.getElementById('copyBtn').addEventListener('click', async () => {
+  const hash = document.getElementById('hashOut').textContent;
+  try{
+    await navigator.clipboard.writeText(hash);
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Kopiert ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Kopieren'; btn.classList.remove('copied'); }, 2000);
+  } catch(e){ alert('Kopieren fehlgeschlagen — bitte den Hash manuell markieren und kopieren.'); }
+});
+</script>
+</body>
+</html>
