@@ -197,6 +197,7 @@
     <button id="unlockBtn">Entsperren</button>
     <div id="gate-error"></div>
     <div id="gate-setup-note"></div>
+    <div id="gate-connection-warning" style="display:none; color: var(--rust); font-size: 12px; margin-top: 16px; line-height:1.5; border-top: 1px solid var(--line); padding-top: 14px;"></div>
   </div>
 </div>
 
@@ -311,7 +312,32 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ---------------- Config / Supabase ---------------- */
-const supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+let supabaseClient = null;
+let supabaseInitError = '';
+try{
+  if(!window.SUPABASE_URL || window.SUPABASE_URL.includes('DEIN-PROJEKT')){
+    supabaseInitError = 'config.js ist noch nicht ausgefüllt (Supabase-URL fehlt).';
+  } else if(!window.SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY.includes('DEIN-ANON-KEY')){
+    supabaseInitError = 'config.js ist noch nicht ausgefüllt (Supabase-Key fehlt).';
+  } else if(!window.supabase || !window.supabase.createClient){
+    supabaseInitError = 'Die Supabase-Bibliothek konnte nicht geladen werden (evtl. Ad-/Script-Blocker oder keine Internetverbindung).';
+  } else {
+    supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+  }
+} catch(err){
+  supabaseInitError = 'Supabase-Verbindung fehlgeschlagen: ' + err.message;
+}
+if(supabaseInitError){
+  console.error(supabaseInitError);
+  const warnEl = document.getElementById('gate-connection-warning');
+  warnEl.textContent = '⚠ ' + supabaseInitError + ' Das Passwort funktioniert trotzdem, aber Einträge können erst geladen werden, sobald das behoben ist.';
+  warnEl.style.display = 'block';
+}
+
+function requireSupabase(){
+  if(!supabaseClient) throw new Error(supabaseInitError || 'Keine Datenbankverbindung.');
+  return supabaseClient;
+}
 
 const PW_HASH_KEY = 'windlog_pw_hash_v1';
 const SESSION_KEY = 'windlog_unlocked';
@@ -397,7 +423,7 @@ async function showNameGate(){
 async function populateNameChips(){
   nameChips.innerHTML = '';
   try{
-    const { data, error } = await supabaseClient.from('entries').select('username');
+    const { data, error } = await requireSupabase().from('entries').select('username');
     if(error) throw error;
     const names = [...new Set(data.map(r => r.username))].filter(Boolean).sort();
     names.forEach(n => {
@@ -488,4 +514,192 @@ function fillFormForEdit(entry){
   document.getElementById('formTitleLabel').textContent = 'Session bearbeiten';
   document.getElementById('saveBtn').textContent = 'Änderungen speichern';
   cancelEditBtn.style.display = 'inline-block';
-  form.scrollInt
+  form.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+cancelEditBtn.addEventListener('click', resetForm);
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  const payload = {
+    username: currentUsername,
+    entry_date: document.getElementById('fDate').value,
+    spot: document.getElementById('fSpot').value.trim(),
+    wind_kn: numOrNull(document.getElementById('fWind').value),
+    gust_kn: numOrNull(document.getElementById('fGust').value),
+    wind_direction: document.getElementById('fDir').value || null,
+    shore: currentShore || null,
+    wing_m2: numOrNull(document.getElementById('fWing').value),
+    board_l: numOrNull(document.getElementById('fBoard').value),
+    rating: currentRating,
+    notes: document.getElementById('fNotes').value.trim() || null
+  };
+  const saveBtn = document.getElementById('saveBtn');
+  saveBtn.disabled = true;
+  try{
+    if(editingId){
+      const { error } = await requireSupabase().from('entries').update(payload).eq('id', editingId);
+      if(error) throw error;
+    } else {
+      const { error } = await requireSupabase().from('entries').insert([payload]);
+      if(error) throw error;
+    }
+    resetForm();
+    await loadAndRender();
+  } catch(err){
+    alert('Speichern fehlgeschlagen: ' + err.message);
+  } finally {
+    saveBtn.disabled = false;
+  }
+});
+
+function numOrNull(v){ return v === '' || v === null || v === undefined ? null : parseFloat(v); }
+
+/* ---------------- Data loading ---------------- */
+let allEntries = [];
+
+async function loadAndRender(){
+  const list = document.getElementById('entriesList');
+  try{
+    const { data, error } = await requireSupabase()
+      .from('entries')
+      .select('*')
+      .order('entry_date', { ascending: false })
+      .order('created_at', { ascending: false });
+    if(error) throw error;
+    allEntries = data || [];
+    populateUserFilter(allEntries);
+    renderAll(getFilteredEntries());
+  } catch(err){
+    list.innerHTML = `<div class="empty">Konnte Einträge nicht laden: ${escapeHtml(err.message)}<br>Prüfe config.js (Supabase-URL/Key) und deine Internetverbindung.</div>`;
+  }
+}
+
+function getFilteredEntries(){
+  const filter = document.getElementById('filterUser').value;
+  return filter ? allEntries.filter(e => e.username === filter) : allEntries;
+}
+
+function populateUserFilter(entries){
+  const sel = document.getElementById('filterUser');
+  const current = sel.value;
+  const names = [...new Set(entries.map(e => e.username))].filter(Boolean).sort();
+  sel.innerHTML = '<option value="">Alle Benutzer</option>' + names.map(n => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+  if(names.includes(current)) sel.value = current;
+}
+document.getElementById('filterUser').addEventListener('change', () => renderAll(getFilteredEntries()));
+
+/* ---------------- Realtime ---------------- */
+function subscribeRealtime(){
+  if(!supabaseClient) return; // Fehler wurde bereits beim Laden angezeigt
+  supabaseClient
+    .channel('entries-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'entries' }, () => {
+      loadAndRender();
+    })
+    .subscribe();
+}
+
+/* ---------------- Rendering ---------------- */
+function renderRose(entries){
+  const svg = document.getElementById('roseSvg');
+  const cx = 60, cy = 60, maxR = 46;
+  const dirs = ['N','NO','O','SO','S','SW','W','NW'];
+  const counts = {}; dirs.forEach(d => counts[d] = 0);
+  let totalWithDir = 0;
+  entries.forEach(en => { if(en.wind_direction && counts[en.wind_direction] !== undefined){ counts[en.wind_direction]++; totalWithDir++; } });
+  const maxCount = Math.max(1, ...Object.values(counts));
+
+  let svgContent = `<circle cx="${cx}" cy="${cy}" r="${maxR}" fill="none" stroke="rgba(247,249,247,0.1)" stroke-width="1"/>`;
+  svgContent += `<circle cx="${cx}" cy="${cy}" r="${maxR*0.5}" fill="none" stroke="rgba(247,249,247,0.07)" stroke-width="1"/>`;
+
+  dirs.forEach((d,i) => {
+    const angleDeg = -90 + i * 45;
+    const angleRad = angleDeg * Math.PI/180;
+    const r = totalWithDir ? (counts[d]/maxCount) * maxR : 0;
+    const x = cx + r * Math.cos(angleRad);
+    const y = cy + r * Math.sin(angleRad);
+    if(r > 2){
+      svgContent += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#E07A3F" stroke-width="7" stroke-linecap="round" opacity="0.85"/>`;
+    }
+    const lx = cx + (maxR+12) * Math.cos(angleRad);
+    const ly = cy + (maxR+12) * Math.sin(angleRad);
+    svgContent += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="rgba(247,249,247,0.55)" font-size="9" font-family="Inter" text-anchor="middle" dominant-baseline="middle">${d}</text>`;
+  });
+  svg.innerHTML = svgContent;
+}
+
+function renderStats(entries){
+  const winds = entries.map(e => parseFloat(e.wind_kn)).filter(v => !isNaN(v));
+  const avg = winds.length ? (winds.reduce((a,b)=>a+b,0)/winds.length).toFixed(1) : '–';
+  document.getElementById('statAvgWind').textContent = avg;
+  document.getElementById('statSessions').textContent = entries.length;
+}
+
+function renderList(entries){
+  const list = document.getElementById('entriesList');
+  if(!entries.length){
+    list.innerHTML = '<div class="empty">Noch keine Sessions geloggt. Trag oben die erste ein.</div>';
+    return;
+  }
+  list.innerHTML = entries.map(en => {
+    const dateFmt = en.entry_date ? new Date(en.entry_date + 'T00:00:00').toLocaleDateString('de-DE', {day:'numeric', month:'short', year:'numeric'}) : '';
+    const metaParts = [];
+    if(en.wind_kn) metaParts.push(`${en.wind_kn} kn${en.gust_kn ? ' (Böen ' + en.gust_kn + ')' : ''}`);
+    if(en.wind_direction) metaParts.push(en.wind_direction);
+    if(en.shore) metaParts.push(`<span class="shore-tag ${en.shore}">${en.shore === 'ablandig' ? 'Ablandig' : 'Auflandig'}</span>`);
+    if(en.wing_m2) metaParts.push(en.wing_m2 + ' m² Wing');
+    if(en.board_l) metaParts.push(en.board_l + ' L Board');
+    return `
+      <div class="entry" data-id="${en.id}">
+        <div class="left">
+          <div class="spot">${escapeHtml(en.spot || 'Unbekannter Spot')}<span class="who-tag">${escapeHtml(en.username || '?')}</span></div>
+          <div class="meta">${dateFmt}${metaParts.length ? ' · ' + metaParts.join(' · ') : ''}</div>
+          ${en.notes ? `<div class="notes">${escapeHtml(en.notes)}</div>` : ''}
+        </div>
+        <div class="right">
+          <div class="stars-display">${'★'.repeat(en.rating||0)}${'☆'.repeat(5-(en.rating||0))}</div>
+          <button class="delBtn" data-del="${en.id}">Löschen</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  list.querySelectorAll('.entry').forEach(el => {
+    el.addEventListener('click', (e) => {
+      if(e.target.closest('.delBtn')) return;
+      const entry = allEntries.find(x => String(x.id) === el.dataset.id);
+      if(entry) fillFormForEdit(entry);
+    });
+  });
+  list.querySelectorAll('.delBtn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      if(!confirm('Diese Session wirklich löschen?')) return;
+      try{
+        const { error } = await requireSupabase().from('entries').delete().eq('id', btn.dataset.del);
+        if(error) throw error;
+      } catch(err){ alert('Löschen fehlgeschlagen: ' + err.message); return; }
+      await loadAndRender();
+    });
+  });
+}
+
+function escapeHtml(str){
+  return (str==null?'':String(str)).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function renderAll(entries){
+  renderRose(entries);
+  renderStats(entries);
+  renderList(entries);
+}
+
+/* ---------------- Service worker registration ---------------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
