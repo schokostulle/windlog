@@ -21,6 +21,8 @@
     --sand: #D9C9A3;
     --rust: #E07A3F;
     --wind: #8FBFBF;
+    --offshore: #7FBF7F;
+    --onshore: #C97A9E;
     --line: rgba(247,249,247,0.12);
     --text-dim: rgba(247,249,247,0.62);
     --radius: 14px;
@@ -48,170 +50,135 @@
     padding: 24px;
     z-index: 50;
   }
-  .gate-card{
-    width: 100%; max-width: 360px;
-    text-align:center;
-  }
+  .gate-card{ width: 100%; max-width: 360px; text-align:center; }
   .gate-mark{
-    font-family:'Fraunces', serif;
-    font-size: 15px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--wind);
-    margin-bottom: 10px;
+    font-family:'Fraunces', serif; font-size: 15px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--wind); margin-bottom: 10px;
   }
-  .gate-card h1{
-    font-size: 34px;
-    margin: 0 0 6px;
+  .gate-card h1{ font-size: 34px; margin: 0 0 6px; }
+  .gate-card p{ color: var(--text-dim); font-size: 14px; margin: 0 0 28px; }
+  #gate input, #nameGate input{
+    width:100%; padding: 14px 16px; border-radius: var(--radius);
+    border: 1px solid var(--line); background: rgba(247,249,247,0.06);
+    color: var(--foam); font-size: 16px; font-family: 'Inter', sans-serif;
+    outline:none; margin-bottom: 14px;
   }
-  .gate-card p{
-    color: var(--text-dim);
-    font-size: 14px;
-    margin: 0 0 28px;
+  #gate input:focus, #nameGate input:focus{ border-color: var(--wind); }
+  #gate button, #nameGate button{
+    width:100%; padding: 14px; border-radius: var(--radius); border:none;
+    background: var(--rust); color: var(--sea-deep); font-weight: 700;
+    font-size: 15px; cursor:pointer;
   }
-  #gate input{
-    width:100%;
-    padding: 14px 16px;
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-    background: rgba(247,249,247,0.06);
-    color: var(--foam);
-    font-size: 16px;
-    font-family: 'Inter', sans-serif;
-    outline:none;
-    margin-bottom: 14px;
-  }
-  #gate input:focus{ border-color: var(--wind); }
-  #gate button{
-    width:100%;
-    padding: 14px;
-    border-radius: var(--radius);
-    border:none;
-    background: var(--rust);
-    color: var(--sea-deep);
-    font-weight: 700;
-    font-size: 15px;
-    cursor:pointer;
-  }
-  #gate button:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible{
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
     outline: 2px solid var(--wind); outline-offset: 2px;
   }
-  #gate-error{
-    color: var(--rust);
-    font-size: 13px;
-    min-height: 18px;
-    margin-top: 10px;
+  #gate-error, #name-error{ color: var(--rust); font-size: 13px; min-height: 18px; margin-top: 10px; }
+  #gate-setup-note{ color: var(--text-dim); font-size: 12px; margin-top: 22px; line-height: 1.5; }
+  .name-chips{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:16px; }
+  .name-chip{
+    padding: 8px 14px; border-radius: 999px; border:1px solid var(--line);
+    background: rgba(247,249,247,0.05); color: var(--foam); font-size:13px; cursor:pointer;
   }
-  #gate-setup-note{
-    color: var(--text-dim);
-    font-size: 12px;
-    margin-top: 22px;
-    line-height: 1.5;
-  }
+  .name-chip:hover{ border-color: var(--wind); }
 
   /* ---------- App shell ---------- */
   #app{ display:none; padding-bottom: 60px; }
   header.topbar{
-    padding: 20px 20px 16px;
-    display:flex; align-items:baseline; justify-content:space-between;
+    padding: 16px 20px; display:flex; align-items:center; justify-content:space-between;
     border-bottom: 1px solid var(--line);
     background: linear-gradient(180deg, var(--sea) 0%, var(--sea-deep) 100%);
     position: sticky; top:0; z-index:10;
   }
-  header.topbar .brand{ font-size: 20px; }
-  header.topbar .brand span{ color: var(--wind); font-family:'Inter'; font-size: 11px; letter-spacing:0.14em; text-transform:uppercase; display:block; font-weight:600; margin-top:2px;}
-  #lockBtn{
+  header.topbar .brand{ font-family:'Fraunces'; font-size: 20px; }
+  header.topbar .who{ color: var(--wind); font-family:'Inter'; font-size: 11px; letter-spacing:0.1em; text-transform:uppercase; font-weight:600; }
+  .topbar-actions{ display:flex; gap:8px; }
+  .topbar-actions button{
     background:none; border:1px solid var(--line); color: var(--text-dim);
-    padding: 8px 12px; border-radius: 10px; font-size: 12px; cursor:pointer;
+    padding: 7px 11px; border-radius: 10px; font-size: 12px; cursor:pointer;
   }
 
   main{ max-width: 640px; margin: 0 auto; padding: 20px; }
 
-  /* Wind rose signature */
   .rose-card{
-    background: rgba(247,249,247,0.04);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 22px;
+    background: rgba(247,249,247,0.04); border: 1px solid var(--line);
+    border-radius: 20px; padding: 20px; margin-bottom: 22px;
     display:flex; gap:20px; align-items:center;
   }
   .rose-card svg{ flex-shrink:0; }
   .rose-stats{ flex:1; }
-  .rose-stats .big{ font-family:'Fraunces'; font-size: 30px; line-height:1; }
-  .rose-stats .lbl{ color: var(--text-dim); font-size: 12px; text-transform:uppercase; letter-spacing:0.08em; margin-top:4px;}
-  .rose-stats .row{ margin-bottom: 14px; }
+  .rose-stats .big{ font-family:'Fraunces'; font-size: 28px; line-height:1; }
+  .rose-stats .lbl{ color: var(--text-dim); font-size: 11.5px; text-transform:uppercase; letter-spacing:0.08em; margin-top:4px;}
+  .rose-stats .row{ margin-bottom: 12px; }
   .rose-stats .row:last-child{ margin-bottom:0; }
 
-  section-title, .section-title{
-    display:block; font-size: 12px; text-transform:uppercase; letter-spacing:0.1em;
+  .section-title{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size: 12px; text-transform:uppercase; letter-spacing:0.1em;
     color: var(--wind); margin: 26px 0 12px; font-weight:600;
   }
 
-  /* Form */
   #entryForm{
-    background: rgba(247,249,247,0.04);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 18px;
-    margin-bottom: 8px;
+    background: rgba(247,249,247,0.04); border: 1px solid var(--line);
+    border-radius: 20px; padding: 18px; margin-bottom: 8px;
   }
-  .form-grid{
-    display:grid; grid-template-columns: 1fr 1fr; gap: 12px;
-  }
+  #formTitle{ font-family:'Fraunces'; font-size: 18px; margin: 0 0 14px; }
+  .form-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .form-grid .full{ grid-column: 1 / -1; }
   label{ display:block; font-size:11px; color: var(--text-dim); margin-bottom:5px; text-transform:uppercase; letter-spacing:0.06em;}
   input, select, textarea{
-    width:100%;
-    padding: 11px 12px;
-    border-radius: 10px;
-    border: 1px solid var(--line);
-    background: rgba(10,43,44,0.5);
-    color: var(--foam);
-    font-size: 15px;
-    font-family:'Inter';
-    outline:none;
+    width:100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line);
+    background: rgba(10,43,44,0.5); color: var(--foam); font-size: 15px;
+    font-family:'Inter'; outline:none;
   }
   textarea{ resize: vertical; min-height: 60px; }
   input:focus, select:focus, textarea:focus{ border-color: var(--wind); }
+  .shore-toggle{ display:flex; gap:8px; }
+  .shore-toggle button{
+    flex:1; padding: 11px; border-radius: 10px; border:1px solid var(--line);
+    background: rgba(10,43,44,0.5); color: var(--text-dim); font-size: 13px; cursor:pointer;
+  }
+  .shore-toggle button.active[data-v="ablandig"]{ background: var(--offshore); color: var(--sea-deep); border-color: var(--offshore); font-weight:700;}
+  .shore-toggle button.active[data-v="auflandig"]{ background: var(--onshore); color: var(--sea-deep); border-color: var(--onshore); font-weight:700;}
   .stars{ display:flex; gap:6px; font-size:22px; margin-top:4px; }
   .stars span{ cursor:pointer; opacity:0.3; }
   .stars span.active{ opacity:1; }
+  .form-actions{ display:flex; gap:10px; margin-top: 14px; }
   #saveBtn{
-    margin-top: 14px;
-    width:100%;
-    padding: 13px;
-    border-radius: 10px;
-    border:none;
-    background: var(--rust);
-    color: var(--sea-deep);
-    font-weight:700;
-    font-size: 15px;
-    cursor:pointer;
+    flex:1; padding: 13px; border-radius: 10px; border:none; background: var(--rust);
+    color: var(--sea-deep); font-weight:700; font-size: 15px; cursor:pointer;
+  }
+  #cancelEditBtn{
+    display:none; padding: 13px 16px; border-radius: 10px; border:1px solid var(--line);
+    background:none; color: var(--text-dim); font-size: 14px; cursor:pointer;
   }
 
-  /* Entries list */
-  .entry{
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 14px 16px;
-    margin-bottom: 10px;
-    display:flex; justify-content:space-between; gap: 12px;
+  select#filterUser{
+    max-width: 180px; padding: 7px 10px; font-size: 12.5px; border-radius: 10px;
   }
+
+  .entry{
+    border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px;
+    margin-bottom: 10px; display:flex; justify-content:space-between; gap: 12px; cursor:pointer;
+  }
+  .entry:hover{ border-color: var(--wind); }
   .entry .left{ flex:1; }
   .entry .spot{ font-family:'Fraunces'; font-size:17px; }
-  .entry .meta{ color: var(--text-dim); font-size: 12.5px; margin-top: 3px; line-height:1.5;}
+  .entry .who-tag{
+    display:inline-block; font-size: 10.5px; text-transform:uppercase; letter-spacing:0.06em;
+    color: var(--sea-deep); background: var(--sand); padding: 2px 8px; border-radius:999px;
+    margin-left: 8px; vertical-align: middle;
+  }
+  .entry .meta{ color: var(--text-dim); font-size: 12.5px; margin-top: 5px; line-height:1.5;}
+  .entry .shore-tag{ font-weight:600; }
+  .entry .shore-tag.ablandig{ color: var(--offshore); }
+  .entry .shore-tag.auflandig{ color: var(--onshore); }
   .entry .notes{ font-size: 13px; margin-top:6px; color: rgba(247,249,247,0.85); }
   .entry .right{ text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:8px; }
   .entry .stars-display{ font-size:13px; color: var(--sand); }
   .entry .delBtn{ background:none; border:none; color: var(--text-dim); font-size:12px; cursor:pointer; padding:2px 4px;}
   .empty{ text-align:center; color: var(--text-dim); font-size: 14px; padding: 30px 10px; }
-
-  .toolbar{ display:flex; gap:10px; margin-bottom: 8px; }
-  .toolbar button{
-    flex:1; background: rgba(247,249,247,0.05); border:1px solid var(--line); color: var(--foam);
-    padding: 9px; border-radius: 10px; font-size: 12.5px; cursor:pointer;
-  }
+  .loading{ text-align:center; color: var(--text-dim); font-size: 13px; padding: 20px; }
+  .sync-note{ text-align:center; color: var(--text-dim); font-size: 11px; margin-top: 18px; }
 
   @media (max-width: 420px){
     .rose-card{ flex-direction:column; }
@@ -225,7 +192,7 @@
   <div class="gate-card">
     <div class="gate-mark">✦ Windlog</div>
     <h1>Erst das Passwort,<br>dann der Wind.</h1>
-    <p>Dein privates Surf-Tagebuch.</p>
+    <p>Euer gemeinsames Surf-Tagebuch.</p>
     <input type="password" id="pwInput" placeholder="Passwort" autocomplete="current-password">
     <button id="unlockBtn">Entsperren</button>
     <div id="gate-error"></div>
@@ -233,10 +200,28 @@
   </div>
 </div>
 
+<div id="nameGate" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background: radial-gradient(ellipse at 50% 20%, var(--sea) 0%, var(--sea-deep) 70%); padding:24px; z-index:45;">
+  <div class="gate-card">
+    <div class="gate-mark">✦ Windlog</div>
+    <h1>Wer bist du?</h1>
+    <p>Dein Name erscheint an deinen Einträgen.</p>
+    <div class="name-chips" id="nameChips"></div>
+    <input type="text" id="nameInput" placeholder="Name eingeben">
+    <button id="setNameBtn">Weiter</button>
+    <div id="name-error"></div>
+  </div>
+</div>
+
 <div id="app">
   <header class="topbar">
-    <div class="brand">Windlog<span id="dateNow"></span></div>
-    <button id="lockBtn">Sperren</button>
+    <div>
+      <div class="brand">Windlog</div>
+      <div class="who" id="whoLabel"></div>
+    </div>
+    <div class="topbar-actions">
+      <button id="switchUserBtn">Name ändern</button>
+      <button id="lockBtn">Sperren</button>
+    </div>
   </header>
 
   <main>
@@ -254,7 +239,7 @@
       </div>
     </div>
 
-    <span class="section-title">Neue Session</span>
+    <div class="section-title"><span id="formTitleLabel">Neue Session</span></div>
     <form id="entryForm">
       <div class="form-grid">
         <div>
@@ -282,12 +267,19 @@
           </select>
         </div>
         <div>
-          <label for="fWave">Wellenhöhe (m)</label>
-          <input type="number" id="fWave" min="0" max="10" step="0.1" placeholder="1.2">
+          <label>Ablandig / Auflandig</label>
+          <div class="shore-toggle" id="shoreToggle">
+            <button type="button" data-v="ablandig">Ablandig</button>
+            <button type="button" data-v="auflandig">Auflandig</button>
+          </div>
         </div>
-        <div class="full">
-          <label for="fGear">Material</label>
-          <input type="text" id="fGear" placeholder="z.B. 5.5m Segel, 90L Board">
+        <div>
+          <label for="fWing">Wing (m²)</label>
+          <input type="number" id="fWing" min="0" max="30" step="0.1" placeholder="4.5">
+        </div>
+        <div>
+          <label for="fBoard">Board (L)</label>
+          <input type="number" id="fBoard" min="0" max="300" placeholder="90">
         </div>
         <div class="full">
           <label>Bewertung</label>
@@ -300,24 +292,30 @@
           <textarea id="fNotes" placeholder="Bedingungen, Gefühl, was beim nächsten Mal anders..."></textarea>
         </div>
       </div>
-      <button type="submit" id="saveBtn">Session speichern</button>
+      <div class="form-actions">
+        <button type="submit" id="saveBtn">Session speichern</button>
+        <button type="button" id="cancelEditBtn">Abbrechen</button>
+      </div>
     </form>
 
-    <span class="section-title">Verlauf</span>
-    <div class="toolbar">
-      <button id="exportBtn">Export (JSON)</button>
-      <button id="importBtn">Import</button>
+    <div class="section-title">
+      <span>Verlauf</span>
+      <select id="filterUser"><option value="">Alle Benutzer</option></select>
     </div>
-    <input type="file" id="importFile" accept="application/json" style="display:none">
-    <div id="entriesList"></div>
+    <div id="entriesList"><div class="loading">Lade Einträge…</div></div>
+    <div class="sync-note">Einträge werden live mit allen geteilt.</div>
   </main>
 </div>
 
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-/* ---------------- Config ---------------- */
-const STORAGE_KEY = 'windlog_entries_v1';
+/* ---------------- Config / Supabase ---------------- */
+const supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
 const PW_HASH_KEY = 'windlog_pw_hash_v1';
 const SESSION_KEY = 'windlog_unlocked';
+const USERNAME_KEY = 'windlog_username_v1';
 
 /* ---------------- Crypto helpers ---------------- */
 async function sha256(text){
@@ -326,21 +324,17 @@ async function sha256(text){
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
 
-/* ---------------- Gate logic ---------------- */
+/* ---------------- Password gate ---------------- */
 const gate = document.getElementById('gate');
+const nameGate = document.getElementById('nameGate');
 const app = document.getElementById('app');
 const pwInput = document.getElementById('pwInput');
 const gateError = document.getElementById('gate-error');
 const setupNote = document.getElementById('gate-setup-note');
 
 function hasStoredPw(){ return !!localStorage.getItem(PW_HASH_KEY); }
-
 function refreshGateCopy(){
-  if(!hasStoredPw()){
-    setupNote.textContent = 'Noch kein Passwort gesetzt — was du hier eingibst, wird dein neues Passwort für dieses Gerät.';
-  } else {
-    setupNote.textContent = '';
-  }
+  setupNote.textContent = hasStoredPw() ? '' : 'Noch kein Passwort auf diesem Gerät gesetzt — was du hier eingibst, wird zum Passwort. Nutze dasselbe Wort auf allen Geräten.';
 }
 refreshGateCopy();
 
@@ -350,23 +344,16 @@ async function tryUnlock(){
   const hash = await sha256(val);
   if(!hasStoredPw()){
     localStorage.setItem(PW_HASH_KEY, hash);
-    enterApp();
+    afterUnlock();
     return;
   }
   if(hash === localStorage.getItem(PW_HASH_KEY)){
     sessionStorage.setItem(SESSION_KEY, '1');
-    enterApp();
+    afterUnlock();
   } else {
     gateError.textContent = 'Falsches Passwort.';
     pwInput.value = '';
   }
-}
-
-function enterApp(){
-  gate.style.display = 'none';
-  app.style.display = 'block';
-  gateError.textContent = '';
-  renderAll();
 }
 
 document.getElementById('unlockBtn').addEventListener('click', tryUnlock);
@@ -380,192 +367,125 @@ document.getElementById('lockBtn').addEventListener('click', () => {
   pwInput.focus();
 });
 
-/* auto-unlock within same browser session */
+function afterUnlock(){
+  gate.style.display = 'none';
+  gateError.textContent = '';
+  const savedName = localStorage.getItem(USERNAME_KEY);
+  if(savedName){
+    enterApp(savedName);
+  } else {
+    showNameGate();
+  }
+}
+
 if(sessionStorage.getItem(SESSION_KEY) === '1' && hasStoredPw()){
-  enterApp();
+  afterUnlock();
 }
 
-/* ---------------- Date header ---------------- */
-document.getElementById('dateNow').textContent = ' · ' + new Date().toLocaleDateString('de-DE', {weekday:'short', day:'numeric', month:'short'});
+/* ---------------- Name gate ---------------- */
+const nameInput = document.getElementById('nameInput');
+const nameError = document.getElementById('name-error');
+const nameChips = document.getElementById('nameChips');
 
-/* ---------------- Data layer ---------------- */
-function loadEntries(){
-  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-  catch(e){ return []; }
+async function showNameGate(){
+  nameGate.style.display = 'flex';
+  nameError.textContent = '';
+  nameInput.value = '';
+  await populateNameChips();
 }
-function saveEntries(entries){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+
+async function populateNameChips(){
+  nameChips.innerHTML = '';
+  try{
+    const { data, error } = await supabaseClient.from('entries').select('username');
+    if(error) throw error;
+    const names = [...new Set(data.map(r => r.username))].filter(Boolean).sort();
+    names.forEach(n => {
+      const chip = document.createElement('div');
+      chip.className = 'name-chip';
+      chip.textContent = n;
+      chip.addEventListener('click', () => { nameInput.value = n; });
+      nameChips.appendChild(chip);
+    });
+  } catch(e){ /* silently ignore, chips are just a convenience */ }
+}
+
+document.getElementById('setNameBtn').addEventListener('click', () => {
+  const val = nameInput.value.trim();
+  if(!val){ nameError.textContent = 'Bitte einen Namen eingeben.'; return; }
+  localStorage.setItem(USERNAME_KEY, val);
+  nameGate.style.display = 'none';
+  enterApp(val);
+});
+nameInput.addEventListener('keydown', e => { if(e.key === 'Enter') document.getElementById('setNameBtn').click(); });
+
+document.getElementById('switchUserBtn').addEventListener('click', () => {
+  app.style.display = 'none';
+  showNameGate();
+});
+
+/* ---------------- Enter app ---------------- */
+let currentUsername = '';
+
+function enterApp(name){
+  currentUsername = name;
+  document.getElementById('whoLabel').textContent = 'Angemeldet als ' + name;
+  app.style.display = 'block';
+  loadAndRender();
+  subscribeRealtime();
 }
 
 /* ---------------- Star picker ---------------- */
 let currentRating = 0;
 const starPicker = document.getElementById('starPicker');
 starPicker.querySelectorAll('span').forEach(s => {
-  s.addEventListener('click', () => {
-    currentRating = parseInt(s.dataset.v);
-    updateStarDisplay();
-  });
+  s.addEventListener('click', () => { currentRating = parseInt(s.dataset.v); updateStarDisplay(); });
 });
 function updateStarDisplay(){
-  starPicker.querySelectorAll('span').forEach(s => {
-    s.classList.toggle('active', parseInt(s.dataset.v) <= currentRating);
-  });
+  starPicker.querySelectorAll('span').forEach(s => s.classList.toggle('active', parseInt(s.dataset.v) <= currentRating));
 }
 
-/* ---------------- Form submit ---------------- */
+/* ---------------- Shore toggle ---------------- */
+let currentShore = '';
+const shoreToggle = document.getElementById('shoreToggle');
+shoreToggle.querySelectorAll('button').forEach(b => {
+  b.addEventListener('click', () => {
+    currentShore = (currentShore === b.dataset.v) ? '' : b.dataset.v;
+    shoreToggle.querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.v === currentShore));
+  });
+});
+
+/* ---------------- Form state ---------------- */
+let editingId = null;
+const form = document.getElementById('entryForm');
+const cancelEditBtn = document.getElementById('cancelEditBtn');
 document.getElementById('fDate').valueAsDate = new Date();
 
-document.getElementById('entryForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const entries = loadEntries();
-  entries.unshift({
-    id: Date.now(),
-    date: document.getElementById('fDate').value,
-    spot: document.getElementById('fSpot').value.trim(),
-    wind: document.getElementById('fWind').value,
-    gust: document.getElementById('fGust').value,
-    dir: document.getElementById('fDir').value,
-    wave: document.getElementById('fWave').value,
-    gear: document.getElementById('fGear').value.trim(),
-    rating: currentRating,
-    notes: document.getElementById('fNotes').value.trim()
-  });
-  saveEntries(entries);
-  e.target.reset();
+function resetForm(){
+  form.reset();
   document.getElementById('fDate').valueAsDate = new Date();
-  currentRating = 0;
-  updateStarDisplay();
-  renderAll();
-});
-
-/* ---------------- Rendering ---------------- */
-const DIR_ANGLE = {N:270, NO:315, O:0, SO:45, S:90, SW:135, W:180, NW:225};
-// angle convention: 0=right(O/East), using standard screen coords, rotated so N is up
-
-function renderRose(entries){
-  const svg = document.getElementById('roseSvg');
-  const size = 120, cx = 60, cy = 60, maxR = 46;
-  const dirs = ['N','NO','O','SO','S','SW','W','NW'];
-  const counts = {};
-  dirs.forEach(d => counts[d] = 0);
-  let totalWithDir = 0;
-  entries.forEach(en => { if(en.dir && counts[en.dir] !== undefined){ counts[en.dir]++; totalWithDir++; } });
-  const maxCount = Math.max(1, ...Object.values(counts));
-
-  let svgContent = `<circle cx="${cx}" cy="${cy}" r="${maxR}" fill="none" stroke="rgba(247,249,247,0.1)" stroke-width="1"/>`;
-  svgContent += `<circle cx="${cx}" cy="${cy}" r="${maxR*0.5}" fill="none" stroke="rgba(247,249,247,0.07)" stroke-width="1"/>`;
-
-  dirs.forEach((d,i) => {
-    const angleDeg = -90 + i * 45; // N at top, clockwise
-    const angleRad = angleDeg * Math.PI/180;
-    const r = totalWithDir ? (counts[d]/maxCount) * maxR : 0;
-    const x = cx + r * Math.cos(angleRad);
-    const y = cy + r * Math.sin(angleRad);
-    if(r > 2){
-      svgContent += `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#E07A3F" stroke-width="7" stroke-linecap="round" opacity="0.85"/>`;
-    }
-    const lx = cx + (maxR+12) * Math.cos(angleRad);
-    const ly = cy + (maxR+12) * Math.sin(angleRad);
-    svgContent += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="rgba(247,249,247,0.55)" font-size="9" font-family="Inter" text-anchor="middle" dominant-baseline="middle">${d}</text>`;
-  });
-
-  svg.innerHTML = svgContent;
+  currentRating = 0; updateStarDisplay();
+  currentShore = ''; shoreToggle.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+  editingId = null;
+  document.getElementById('formTitleLabel').textContent = 'Neue Session';
+  document.getElementById('saveBtn').textContent = 'Session speichern';
+  cancelEditBtn.style.display = 'none';
 }
 
-function renderStats(entries){
-  const winds = entries.map(e => parseFloat(e.wind)).filter(v => !isNaN(v));
-  const avg = winds.length ? (winds.reduce((a,b)=>a+b,0)/winds.length).toFixed(1) : '–';
-  document.getElementById('statAvgWind').textContent = avg;
-  document.getElementById('statSessions').textContent = entries.length;
-}
-
-function renderList(entries){
-  const list = document.getElementById('entriesList');
-  if(!entries.length){
-    list.innerHTML = '<div class="empty">Noch keine Sessions geloggt. Trag deine erste Session oben ein.</div>';
-    return;
-  }
-  list.innerHTML = entries.map(en => {
-    const dateFmt = en.date ? new Date(en.date + 'T00:00:00').toLocaleDateString('de-DE', {day:'numeric', month:'short', year:'numeric'}) : '';
-    const metaParts = [];
-    if(en.wind) metaParts.push(`${en.wind} kn${en.gust ? ' (Böen ' + en.gust + ')' : ''}`);
-    if(en.dir) metaParts.push(en.dir);
-    if(en.wave) metaParts.push(en.wave + ' m Welle');
-    if(en.gear) metaParts.push(en.gear);
-    return `
-      <div class="entry" data-id="${en.id}">
-        <div class="left">
-          <div class="spot">${escapeHtml(en.spot || 'Unbekannter Spot')}</div>
-          <div class="meta">${dateFmt}${metaParts.length ? ' · ' + metaParts.map(escapeHtml).join(' · ') : ''}</div>
-          ${en.notes ? `<div class="notes">${escapeHtml(en.notes)}</div>` : ''}
-        </div>
-        <div class="right">
-          <div class="stars-display">${'★'.repeat(en.rating||0)}${'☆'.repeat(5-(en.rating||0))}</div>
-          <button class="delBtn" onclick="deleteEntry(${en.id})">Löschen</button>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-function escapeHtml(str){
-  return (str||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-
-function deleteEntry(id){
-  const entries = loadEntries().filter(e => e.id !== id);
-  saveEntries(entries);
-  renderAll();
-}
-
-function renderAll(){
-  const entries = loadEntries();
-  renderRose(entries);
-  renderStats(entries);
-  renderList(entries);
-}
-
-/* ---------------- Export / Import ---------------- */
-document.getElementById('exportBtn').addEventListener('click', () => {
-  const data = JSON.stringify(loadEntries(), null, 2);
-  const blob = new Blob([data], {type: 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `windlog-export-${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-});
-
-document.getElementById('importBtn').addEventListener('click', () => {
-  document.getElementById('importFile').click();
-});
-document.getElementById('importFile').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = evt => {
-    try{
-      const imported = JSON.parse(evt.target.result);
-      if(!Array.isArray(imported)) throw new Error('bad format');
-      const existing = loadEntries();
-      const existingIds = new Set(existing.map(e=>e.id));
-      const merged = existing.concat(imported.filter(e => !existingIds.has(e.id)));
-      saveEntries(merged);
-      renderAll();
-    } catch(err){
-      alert('Import fehlgeschlagen: Datei ist kein gültiges Windlog-Export-JSON.');
-    }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
-});
-
-/* ---------------- Service worker registration ---------------- */
-if('serviceWorker' in navigator){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js').catch(()=>{});
-  });
-}
-</script>
-</body>
-</html>
+function fillFormForEdit(entry){
+  editingId = entry.id;
+  document.getElementById('fDate').value = entry.entry_date || '';
+  document.getElementById('fSpot').value = entry.spot || '';
+  document.getElementById('fWind').value = entry.wind_kn ?? '';
+  document.getElementById('fGust').value = entry.gust_kn ?? '';
+  document.getElementById('fDir').value = entry.wind_direction || '';
+  document.getElementById('fWing').value = entry.wing_m2 ?? '';
+  document.getElementById('fBoard').value = entry.board_l ?? '';
+  document.getElementById('fNotes').value = entry.notes || '';
+  currentRating = entry.rating || 0; updateStarDisplay();
+  currentShore = entry.shore || '';
+  shoreToggle.querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.v === currentShore));
+  document.getElementById('formTitleLabel').textContent = 'Session bearbeiten';
+  document.getElementById('saveBtn').textContent = 'Änderungen speichern';
+  cancelEditBtn.style.display = 'inline-block';
+  form.scrollInt
