@@ -1,4 +1,4 @@
-const CACHE_NAME = 'windlog-cache-v2';
+const CACHE_NAME = 'windlog-cache-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -24,14 +24,22 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
+// Netzwerk zuerst: immer die aktuelle Version laden, wenn online.
+// Nur wenn das Netzwerk nicht erreichbar ist (offline), aus dem Cache bedienen.
+// So kann die App künftig nie wieder an einer veralteten, zwischengespeicherten
+// Version "festhängen", solange eine Internetverbindung besteht.
 self.addEventListener('fetch', event => {
   if(event.request.method !== 'GET') return;
-  // Never cache Supabase API calls - always go to network for live data
+  // Supabase-API-Aufrufe nie cachen - immer live vom Netzwerk
   if(event.request.url.includes('supabase.co')) return;
+
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if(cached) return cached;
-      return fetch(event.request).then(response => response).catch(() => cached);
-    })
+    fetch(event.request)
+      .then(response => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
