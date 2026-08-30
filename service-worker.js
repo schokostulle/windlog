@@ -1,8 +1,9 @@
-const CACHE_NAME = 'windlog-cache-v1';
+const CACHE_NAME = 'windlog-cache-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './config.js',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];
@@ -25,13 +26,12 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if(event.request.method !== 'GET') return;
+  // Never cache Supabase API calls - always go to network for live data
+  if(event.request.url.includes('supabase.co')) return;
   event.respondWith(
     caches.match(event.request).then(cached => {
       if(cached) return cached;
-      return fetch(event.request).then(response => {
-        // don't cache cross-origin (e.g. Google Fonts) failures aggressively, just pass through
-        return response;
-      }).catch(() => cached);
+      return fetch(event.request).then(response => response).catch(() => cached);
     })
   );
 });
