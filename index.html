@@ -41,6 +41,7 @@
     font-weight: 600;
     letter-spacing: -0.01em;
   }
+
   /* ---------- Gate screen ---------- */
   #gate{
     position: fixed; inset:0;
@@ -79,6 +80,14 @@
     background: rgba(247,249,247,0.05); color: var(--foam); font-size:13px; cursor:pointer;
   }
   .name-chip:hover{ border-color: var(--wind); }
+  .color-label{ font-size: 11px; text-transform:uppercase; letter-spacing:0.08em; color: var(--text-dim); margin-bottom:10px; text-align:left; }
+  .color-swatches{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-bottom:18px; }
+  .swatch{
+    width:34px; height:34px; border-radius:50%; border:2px solid transparent;
+    cursor:pointer; padding:0; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.15);
+  }
+  .swatch.selected{ border-color: var(--foam); transform: scale(1.12); }
+
   /* ---------- App shell ---------- */
   #app{ display:none; padding-bottom: calc(60px + env(safe-area-inset-bottom)); }
   header.topbar{
@@ -95,7 +104,9 @@
     background:none; border:1px solid var(--line); color: var(--text-dim);
     padding: 7px 11px; border-radius: 10px; font-size: 12px; cursor:pointer;
   }
+
   main{ max-width: 640px; margin: 0 auto; padding: 20px; }
+
   .live-wind-card{
     background: rgba(247,249,247,0.04); border: 1px solid var(--line);
     border-radius: 20px; padding: 20px; margin-bottom: 22px;
@@ -116,6 +127,7 @@
   .live-wind-footer{ display:flex; justify-content:space-between; align-items:center; margin-top:16px; padding-top:14px; border-top:1px solid var(--line); }
   .live-wind-footer a{ color: var(--wind); font-size:12px; text-decoration:none; font-weight:600; }
   .live-wind-footer button{ background:none; border:none; color: var(--text-dim); font-size:12px; cursor:pointer; }
+
   .progress-card{
     background: rgba(247,249,247,0.04); border: 1px solid var(--line);
     border-radius: 20px; padding: 20px; margin-bottom: 22px;
@@ -123,6 +135,7 @@
   .progress-stats{ display:flex; gap: 28px; margin-bottom: 20px; }
   .progress-stats .big{ font-family:'Fraunces'; font-size: 26px; line-height:1; }
   .progress-stats .lbl{ color: var(--text-dim); font-size: 11px; text-transform:uppercase; letter-spacing:0.08em; margin-top:4px;}
+
   .progress-sub-title{
     font-size: 10.5px; text-transform:uppercase; letter-spacing:0.09em;
     color: var(--wind); font-weight:600; margin-bottom: 10px;
@@ -133,12 +146,15 @@
   .heatmap-cell{ aspect-ratio: 1; border-radius: 3px; }
   .heatmap-legend{ display:flex; align-items:center; gap:5px; margin-top:8px; font-size:10.5px; color: var(--text-dim); }
   .heatmap-legend .sw{ width:10px; height:10px; border-radius:2px; }
+
   .trend-empty{ font-size: 12.5px; color: var(--text-dim); padding: 8px 0; }
+
   .section-title{
     display:flex; justify-content:space-between; align-items:center;
     font-size: 12px; text-transform:uppercase; letter-spacing:0.1em;
     color: var(--wind); margin: 26px 0 12px; font-weight:600;
   }
+
   #entryForm{
     background: rgba(247,249,247,0.04); border: 1px solid var(--line);
     border-radius: 20px; padding: 18px; margin-bottom: 8px;
@@ -173,9 +189,11 @@
     display:none; padding: 13px 16px; border-radius: 10px; border:1px solid var(--line);
     background:none; color: var(--text-dim); font-size: 14px; cursor:pointer;
   }
+
   select#filterUser{
     max-width: 180px; padding: 7px 10px; font-size: 12.5px; border-radius: 10px;
   }
+
   .entry{
     border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px 14px 13px;
     margin-bottom: 10px; display:flex; justify-content:space-between; gap: 12px; cursor:pointer;
@@ -206,6 +224,7 @@
   .entry .delBtn{ background:none; border:none; color: var(--text-dim); font-size:12px; cursor:pointer; padding:2px 4px;}
   .empty{ text-align:center; color: var(--text-dim); font-size: 14px; padding: 30px 10px; }
   .loading{ text-align:center; color: var(--text-dim); font-size: 13px; padding: 20px; }
+
   /* View toggle */
   .view-toggle{ display:flex; gap:6px; }
   .view-toggle button{
@@ -213,6 +232,7 @@
     padding: 6px 11px; border-radius: 8px; font-size: 12px; cursor:pointer;
   }
   .view-toggle button.active{ background: var(--wind); color: var(--sea-deep); border-color: var(--wind); font-weight:700; }
+
   /* Comparison table */
   .table-wrap{ overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; -webkit-overflow-scrolling: touch; }
   table.cmp{ border-collapse: collapse; width: 100%; min-width: 720px; font-size: 12.5px; }
@@ -236,6 +256,7 @@
   table.cmp td.notes-cell{ white-space: normal; min-width: 160px; max-width: 240px; color: rgba(247,249,247,0.8); }
   table.cmp .del-icon{ background:none; border:none; color: var(--text-dim); cursor:pointer; font-size:13px; padding:2px 6px; }
   .sync-note{ text-align:center; color: var(--text-dim); font-size: 11px; margin-top: 18px; }
+
   @media (max-width: 420px){
     .heatmap-grid{ grid-template-columns: repeat(10, 1fr); }
     .form-grid{ grid-template-columns: 1fr; }
@@ -243,6 +264,7 @@
 </style>
 </head>
 <body>
+
 <div id="gate">
   <div class="gate-card">
     <div class="gate-mark">✦ Windlog</div>
@@ -263,6 +285,7 @@
     <div id="gate-connection-warning" style="display:none; color: var(--rust); font-size: 12px; margin-top: 16px; line-height:1.5; border-top: 1px solid var(--line); padding-top: 14px;"></div>
   </div>
 </div>
+
 <div id="nameGate" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background: radial-gradient(ellipse at 50% 20%, var(--sea) 0%, var(--sea-deep) 70%); padding: calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left)); z-index:45;">
   <div class="gate-card">
     <div class="gate-mark">✦ Windlog</div>
@@ -270,10 +293,13 @@
     <p>Dein Name erscheint an deinen Einträgen.</p>
     <div class="name-chips" id="nameChips"></div>
     <input type="text" id="nameInput" placeholder="Name eingeben">
+    <div class="color-label">Deine Farbe</div>
+    <div class="color-swatches" id="colorSwatches"></div>
     <button id="setNameBtn">Weiter</button>
     <div id="name-error"></div>
   </div>
 </div>
+
 <div id="app">
   <header class="topbar">
     <div>
@@ -285,6 +311,7 @@
       <button id="lockBtn">Sperren</button>
     </div>
   </header>
+
   <main>
     <div class="live-wind-card" id="liveWindCard">
       <div class="progress-sub-title" style="margin-bottom:14px;">Live-Wind an deinem Standort</div>
@@ -293,6 +320,7 @@
         <div class="live-wind-hint">Zeigt aktuelle Windrichtung &amp; -stärke via Open-Meteo. Datenschutz: Der Standort wird nur an Open-Meteo geschickt, nicht gespeichert.</div>
       </div>
     </div>
+
     <div class="progress-card">
       <div class="progress-stats">
         <div>
@@ -304,6 +332,7 @@
           <div class="lbl">Sessions geloggt</div>
         </div>
       </div>
+
       <div class="progress-sub-title">Session-Kalender (letzte 13 Wochen)</div>
       <div class="heatmap-grid" id="heatmapGrid"></div>
       <div class="heatmap-legend">
@@ -315,9 +344,11 @@
         <span class="sw" style="background:#B85A24;"></span>
         <span>Mehr Wind</span>
       </div>
+
       <div class="progress-sub-title" style="margin-top:22px;">Ø Windstärke im Verlauf</div>
       <div id="trendWrap"><svg id="trendSvg" viewBox="0 0 340 110" style="width:100%; height:auto;"></svg></div>
     </div>
+
     <div class="section-title"><span id="formTitleLabel">Neue Session</span></div>
     <form id="entryForm">
       <div class="form-grid">
@@ -376,6 +407,7 @@
         <button type="button" id="cancelEditBtn">Abbrechen</button>
       </div>
     </form>
+
     <div class="section-title">
       <span>Verlauf</span>
       <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
@@ -390,6 +422,7 @@
     <div class="sync-note">Einträge werden live mit allen geteilt.</div>
   </main>
 </div>
+
 <script src="config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -415,18 +448,22 @@ if(supabaseInitError){
   warnEl.textContent = '⚠ ' + supabaseInitError + ' Das Passwort funktioniert trotzdem, aber Einträge können erst geladen werden, sobald das behoben ist.';
   warnEl.style.display = 'block';
 }
+
 function requireSupabase(){
   if(!supabaseClient) throw new Error(supabaseInitError || 'Keine Datenbankverbindung.');
   return supabaseClient;
 }
+
 const SESSION_KEY = 'windlog_unlocked';
 const USERNAME_KEY = 'windlog_username_v1';
+
 /* ---------------- Crypto helpers ---------------- */
 async function sha256(text){
   const enc = new TextEncoder().encode(text);
   const buf = await crypto.subtle.digest('SHA-256', enc);
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
 }
+
 /* ---------------- Password gate ---------------- */
 const gate = document.getElementById('gate');
 const nameGate = document.getElementById('nameGate');
@@ -434,12 +471,14 @@ const app = document.getElementById('app');
 const pwInput = document.getElementById('pwInput');
 const gateError = document.getElementById('gate-error');
 const setupNote = document.getElementById('gate-setup-note');
+
 function passwordConfigured(){
   return !!window.WINDLOG_PASSWORD_HASH && !window.WINDLOG_PASSWORD_HASH.includes('HASH-HIER-EINFUEGEN');
 }
 if(!passwordConfigured()){
   setupNote.textContent = '⚠ Es ist noch kein Passwort in config.js eingerichtet. Siehe README, Abschnitt "Passwort einrichten".';
 }
+
 async function tryUnlock(){
   const val = pwInput.value.trim();
   if(!val){ gateError.textContent = 'Bitte Passwort eingeben.'; return; }
@@ -456,8 +495,10 @@ async function tryUnlock(){
     pwInput.value = '';
   }
 }
+
 document.getElementById('unlockBtn').addEventListener('click', tryUnlock);
 pwInput.addEventListener('keydown', e => { if(e.key === 'Enter') tryUnlock(); });
+
 document.getElementById('togglePwBtn').addEventListener('click', () => {
   const btn = document.getElementById('togglePwBtn');
   const icon = document.getElementById('eyeIcon');
@@ -471,6 +512,7 @@ document.getElementById('togglePwBtn').addEventListener('click', () => {
     icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
   }
 });
+
 document.getElementById('lockBtn').addEventListener('click', () => {
   sessionStorage.removeItem(SESSION_KEY);
   app.style.display = 'none';
@@ -478,6 +520,7 @@ document.getElementById('lockBtn').addEventListener('click', () => {
   pwInput.value = '';
   pwInput.focus();
 });
+
 function afterUnlock(){
   gate.style.display = 'none';
   gateError.textContent = '';
@@ -488,19 +531,63 @@ function afterUnlock(){
     showNameGate();
   }
 }
+
 if(sessionStorage.getItem(SESSION_KEY) === '1' && passwordConfigured()){
   afterUnlock();
 }
+
 /* ---------------- Name gate ---------------- */
 const nameInput = document.getElementById('nameInput');
 const nameError = document.getElementById('name-error');
 const nameChips = document.getElementById('nameChips');
+const colorSwatches = document.getElementById('colorSwatches');
+
+let userColors = {}; // username -> color, geladen aus Supabase
+let selectedColor = null;
+let colorManuallyPicked = false;
+
+async function loadUserColors(){
+  try{
+    const { data, error } = await requireSupabase().from('user_colors').select('*');
+    if(error) throw error;
+    userColors = {};
+    data.forEach(r => { userColors[r.username] = r.color; });
+  } catch(e){ /* Fallback bleibt die automatische Hash-Farbe */ }
+}
+
+function renderColorSwatches(){
+  colorSwatches.innerHTML = USER_COLORS.map(c =>
+    `<button type="button" class="swatch" data-color="${c}" style="background:${c};" aria-label="Farbe wählen"></button>`
+  ).join('');
+  colorSwatches.querySelectorAll('.swatch').forEach(sw => {
+    sw.addEventListener('click', () => {
+      selectedColor = sw.dataset.color;
+      colorManuallyPicked = true;
+      highlightSwatch(selectedColor);
+    });
+  });
+}
+
+function highlightSwatch(color){
+  colorSwatches.querySelectorAll('.swatch').forEach(sw => {
+    sw.classList.toggle('selected', sw.dataset.color === color);
+  });
+}
+
 async function showNameGate(){
   nameGate.style.display = 'flex';
   nameError.textContent = '';
   nameInput.value = '';
+  colorManuallyPicked = false;
+  renderColorSwatches();
+  await loadUserColors();
   await populateNameChips();
+  const existing = localStorage.getItem(USERNAME_KEY);
+  const startName = existing || '';
+  selectedColor = userColors[startName] || getUserColor(startName || 'x');
+  highlightSwatch(selectedColor);
 }
+
 async function populateNameChips(){
   nameChips.innerHTML = '';
   try{
@@ -510,35 +597,60 @@ async function populateNameChips(){
     names.forEach(n => {
       const chip = document.createElement('div');
       chip.className = 'name-chip';
-      chip.style.borderColor = getUserColor(n);
-      chip.style.color = getUserColor(n);
+      const c = userColors[n] || getUserColor(n);
+      chip.style.borderColor = c;
+      chip.style.color = c;
       chip.textContent = n;
-      chip.addEventListener('click', () => { nameInput.value = n; });
+      chip.addEventListener('click', () => {
+        nameInput.value = n;
+        if(!colorManuallyPicked){
+          selectedColor = userColors[n] || getUserColor(n);
+          highlightSwatch(selectedColor);
+        }
+      });
       nameChips.appendChild(chip);
     });
   } catch(e){ /* silently ignore, chips are just a convenience */ }
 }
-document.getElementById('setNameBtn').addEventListener('click', () => {
+
+nameInput.addEventListener('input', () => {
+  if(colorManuallyPicked) return;
+  const name = nameInput.value.trim();
+  const c = userColors[name] || getUserColor(name || 'x');
+  selectedColor = c;
+  highlightSwatch(c);
+});
+
+document.getElementById('setNameBtn').addEventListener('click', async () => {
   const val = nameInput.value.trim();
   if(!val){ nameError.textContent = 'Bitte einen Namen eingeben.'; return; }
+  const color = selectedColor || getUserColor(val);
   localStorage.setItem(USERNAME_KEY, val);
+  try{
+    await requireSupabase().from('user_colors').upsert({ username: val, color: color }, { onConflict: 'username' });
+    userColors[val] = color;
+  } catch(e){ /* Farbe konnte nicht zentral gespeichert werden, App funktioniert trotzdem mit lokalem Fallback */ }
   nameGate.style.display = 'none';
   enterApp(val);
 });
 nameInput.addEventListener('keydown', e => { if(e.key === 'Enter') document.getElementById('setNameBtn').click(); });
+
 document.getElementById('switchUserBtn').addEventListener('click', () => {
   app.style.display = 'none';
   showNameGate();
 });
+
 /* ---------------- Enter app ---------------- */
 let currentUsername = '';
+
 function enterApp(name){
   currentUsername = name;
   document.getElementById('whoLabel').textContent = 'Angemeldet als ' + name;
   app.style.display = 'block';
-  loadAndRender();
+  loadUserColors().then(() => loadAndRender());
   subscribeRealtime();
 }
+
 /* ---------------- Star picker ---------------- */
 let currentRating = 0;
 const starPicker = document.getElementById('starPicker');
@@ -548,6 +660,7 @@ starPicker.querySelectorAll('span').forEach(s => {
 function updateStarDisplay(){
   starPicker.querySelectorAll('span').forEach(s => s.classList.toggle('active', parseInt(s.dataset.v) <= currentRating));
 }
+
 /* ---------------- Shore toggle ---------------- */
 let currentShore = '';
 const shoreToggle = document.getElementById('shoreToggle');
@@ -557,11 +670,13 @@ shoreToggle.querySelectorAll('button').forEach(b => {
     shoreToggle.querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.v === currentShore));
   });
 });
+
 /* ---------------- Form state ---------------- */
 let editingId = null;
 const form = document.getElementById('entryForm');
 const cancelEditBtn = document.getElementById('cancelEditBtn');
 document.getElementById('fDate').valueAsDate = new Date();
+
 function resetForm(){
   form.reset();
   document.getElementById('fDate').valueAsDate = new Date();
@@ -572,6 +687,7 @@ function resetForm(){
   document.getElementById('saveBtn').textContent = 'Session speichern';
   cancelEditBtn.style.display = 'none';
 }
+
 function fillFormForEdit(entry){
   editingId = entry.id;
   document.getElementById('fDate').value = entry.entry_date || '';
@@ -590,7 +706,9 @@ function fillFormForEdit(entry){
   cancelEditBtn.style.display = 'inline-block';
   form.scrollIntoView({behavior:'smooth', block:'start'});
 }
+
 cancelEditBtn.addEventListener('click', resetForm);
+
 form.addEventListener('submit', async e => {
   e.preventDefault();
   const payload = {
@@ -624,9 +742,12 @@ form.addEventListener('submit', async e => {
     saveBtn.disabled = false;
   }
 });
+
 function numOrNull(v){ return v === '' || v === null || v === undefined ? null : parseFloat(v); }
+
 /* ---------------- Data loading ---------------- */
 let allEntries = [];
+
 async function loadAndRender(){
   const list = document.getElementById('entriesList');
   try{
@@ -643,10 +764,12 @@ async function loadAndRender(){
     list.innerHTML = `<div class="empty">Konnte Einträge nicht laden: ${escapeHtml(err.message)}<br>Prüfe config.js (Supabase-URL/Key) und deine Internetverbindung.</div>`;
   }
 }
+
 function getFilteredEntries(){
   const filter = document.getElementById('filterUser').value;
   return filter ? allEntries.filter(e => e.username === filter) : allEntries;
 }
+
 function populateUserFilter(entries){
   const sel = document.getElementById('filterUser');
   const current = sel.value;
@@ -655,6 +778,7 @@ function populateUserFilter(entries){
   if(names.includes(current)) sel.value = current;
 }
 document.getElementById('filterUser').addEventListener('change', () => renderAll(getFilteredEntries()));
+
 /* ---------------- View mode (Karten / Tabelle) ---------------- */
 const VIEW_KEY = 'windlog_view_mode';
 let viewMode = localStorage.getItem(VIEW_KEY) === 'table' ? 'table' : 'cards';
@@ -671,6 +795,7 @@ viewCardsBtn.addEventListener('click', () => setViewMode('cards'));
 viewTableBtn.addEventListener('click', () => setViewMode('table'));
 viewCardsBtn.classList.toggle('active', viewMode === 'cards');
 viewTableBtn.classList.toggle('active', viewMode === 'table');
+
 /* ---------------- Sorting (for table view, to make comparison easy) ---------------- */
 let sortKey = 'entry_date';
 let sortDir = 'desc';
@@ -699,6 +824,7 @@ function sortEntries(entries){
   });
   return sorted;
 }
+
 /* ---------------- Realtime ---------------- */
 function subscribeRealtime(){
   if(!supabaseClient) return; // Fehler wurde bereits beim Laden angezeigt
@@ -708,13 +834,21 @@ function subscribeRealtime(){
       loadAndRender();
     })
     .subscribe();
+  supabaseClient
+    .channel('user-colors-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'user_colors' }, () => {
+      loadUserColors().then(() => loadAndRender());
+    })
+    .subscribe();
 }
+
 /* ---------------- Rendering ---------------- */
 /* ---------------- Live wind at current location (Open-Meteo) ---------------- */
 function compassLabel(deg){
   const dirs = ['N','NO','O','SO','S','SW','W','NW'];
   return dirs[Math.round(deg / 45) % 8];
 }
+
 function drawCompass(directionFromDeg){
   const size = 96, cx = 48, cy = 48, r = 38;
   const dirs = ['N','O','S','W'];
@@ -739,6 +873,7 @@ function drawCompass(directionFromDeg){
   svg += `<circle cx="${cx}" cy="${cy}" r="3" fill="#D9C9A3"/>`;
   return `<svg width="${size}" height="${size}" viewBox="0 0 96 96">${svg}</svg>`;
 }
+
 async function fetchLiveWind(lat, lon){
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=wind_speed_10m,wind_direction_10m,wind_gusts_10m&wind_speed_unit=kn`;
   const res = await fetch(url);
@@ -747,6 +882,7 @@ async function fetchLiveWind(lat, lon){
   if(!data.current) throw new Error('Keine aktuellen Winddaten verfügbar.');
   return data.current;
 }
+
 function renderLiveWindResult(current, lat, lon){
   const content = document.getElementById('liveWindContent');
   const speed = Math.round(current.wind_speed_10m);
@@ -774,6 +910,7 @@ function renderLiveWindResult(current, lat, lon){
   `;
   document.getElementById('refreshWindBtn').addEventListener('click', () => loadLiveWind(true));
 }
+
 function renderLiveWindError(message){
   const content = document.getElementById('liveWindContent');
   content.innerHTML = `
@@ -782,6 +919,7 @@ function renderLiveWindError(message){
   `;
   document.getElementById('liveWindBtn').addEventListener('click', () => loadLiveWind());
 }
+
 function loadLiveWind(forceLocate){
   const content = document.getElementById('liveWindContent');
   if(!navigator.geolocation){
@@ -808,7 +946,9 @@ function loadLiveWind(forceLocate){
     { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
   );
 }
+
 document.getElementById('liveWindBtn').addEventListener('click', () => loadLiveWind());
+
 function windBucket(kn){
   if(kn == null || isNaN(kn)) return 0;
   if(kn < 12) return 1;
@@ -817,10 +957,12 @@ function windBucket(kn){
   return 4;
 }
 const HEAT_COLORS = ['rgba(247,249,247,0.06)', '#D9C9A3', '#E0A868', '#E07A3F', '#B85A24'];
+
 function renderHeatmap(entries){
   const grid = document.getElementById('heatmapGrid');
   const days = 91; // 13 weeks
   const today = new Date(); today.setHours(0,0,0,0);
+
   // max wind per day (local date string yyyy-mm-dd)
   const perDay = {};
   entries.forEach(en => {
@@ -829,6 +971,7 @@ function renderHeatmap(entries){
     if(isNaN(kn)) return;
     if(!perDay[en.entry_date] || kn > perDay[en.entry_date]) perDay[en.entry_date] = kn;
   });
+
   const cells = [];
   for(let i = days - 1; i >= 0; i--){
     const d = new Date(today);
@@ -838,13 +981,16 @@ function renderHeatmap(entries){
     const label = d.toLocaleDateString('de-DE', {day:'numeric', month:'short'}) + (perDay[key] !== undefined ? ` · ${perDay[key]} kn` : ' · keine Session');
     cells.push({ bucket, label });
   }
+
   grid.innerHTML = cells.map(c =>
     `<div class="heatmap-cell" style="background:${HEAT_COLORS[c.bucket]};" title="${escapeHtml(c.label)}"></div>`
   ).join('');
 }
+
 function renderTrend(entries){
   const wrap = document.getElementById('trendWrap');
   const svg = document.getElementById('trendSvg');
+
   // group by year-month, average wind_kn
   const byMonth = {};
   entries.forEach(en => {
@@ -860,6 +1006,7 @@ function renderTrend(entries){
     month: m,
     avg: byMonth[m].reduce((a,b)=>a+b,0) / byMonth[m].length
   }));
+
   if(points.length < 2){
     wrap.innerHTML = '<div class="trend-empty">Noch nicht genug Daten für einen Trend — sammelt ein paar Sessions mit Windangabe über mehrere Monate.</div>';
     return;
@@ -868,16 +1015,20 @@ function renderTrend(entries){
     wrap.innerHTML = '<svg id="trendSvg" viewBox="0 0 340 110" style="width:100%; height:auto;"></svg>';
   }
   const svgEl = document.getElementById('trendSvg');
+
   const w = 340, h = 110, padL = 30, padR = 10, padT = 10, padB = 20;
   const vals = points.map(p => p.avg);
   const max = Math.ceil(Math.max(...vals) + 2);
   const min = Math.max(0, Math.floor(Math.min(...vals) - 2));
+
   const pts = points.map((p,i) => {
     const x = padL + i * (w - padL - padR) / (points.length - 1);
     const y = h - padB - ((p.avg - min) / (max - min || 1)) * (h - padT - padB);
     return { x, y, ...p };
   });
+
   const pathD = pts.map((p,i) => (i===0?'M':'L') + p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+
   let svgContent = `<line x1="${padL}" y1="${h-padB}" x2="${w-padR}" y2="${h-padB}" stroke="rgba(247,249,247,0.15)" stroke-width="1"/>`;
   svgContent += `<path d="${pathD}" fill="none" stroke="#E07A3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
   pts.forEach(p => {
@@ -891,12 +1042,14 @@ function renderTrend(entries){
   svgContent += `<text x="2" y="${h-padB+2}" fill="rgba(247,249,247,0.45)" font-size="9" font-family="Inter">${min}kn</text>`;
   svgEl.innerHTML = svgContent;
 }
+
 function renderStats(entries){
   const winds = entries.map(e => parseFloat(e.wind_kn)).filter(v => !isNaN(v));
   const avg = winds.length ? (winds.reduce((a,b)=>a+b,0)/winds.length).toFixed(1) : '–';
   document.getElementById('statAvgWind').textContent = avg;
   document.getElementById('statSessions').textContent = entries.length;
 }
+
 function renderList(entries){
   const list = document.getElementById('entriesList');
   if(!entries.length){
@@ -909,6 +1062,7 @@ function renderList(entries){
     renderCards(entries, list);
   }
 }
+
 function renderCards(entries, list){
   list.innerHTML = entries.map(en => {
     const dateFmt = en.entry_date ? new Date(en.entry_date + 'T00:00:00').toLocaleDateString('de-DE', {day:'numeric', month:'short', year:'numeric'}) : '';
@@ -935,6 +1089,7 @@ function renderCards(entries, list){
         </div>
       </div>`;
   }).join('');
+
   list.querySelectorAll('.entry').forEach(el => {
     el.addEventListener('click', (e) => {
       if(e.target.closest('.delBtn')) return;
@@ -954,11 +1109,13 @@ function renderCards(entries, list){
     });
   });
 }
+
 function renderTable(entries, list){
   const headerHtml = TABLE_COLUMNS.map(c => {
     const arrow = sortKey === c.key ? (sortDir === 'asc' ? '▲' : '▼') : '';
     return `<th data-key="${c.key}">${c.label}${arrow ? `<span class="arrow">${arrow}</span>` : ''}</th>`;
   }).join('') + '<th></th>';
+
   const rowsHtml = entries.map(en => {
     const dateFmt = en.entry_date ? new Date(en.entry_date + 'T00:00:00').toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'2-digit'}) : '–';
     const shoreLabel = en.shore ? (en.shore === 'ablandig' ? 'Abl.' : 'Aufl.') : '–';
@@ -979,6 +1136,7 @@ function renderTable(entries, list){
         <td><button class="del-icon" data-del="${en.id}" title="Löschen">✕</button></td>
       </tr>`;
   }).join('');
+
   list.innerHTML = `<div class="table-wrap"><table class="cmp"><thead><tr>${headerHtml}</tr></thead><tbody>${rowsHtml}</tbody></table></div>`;
 
   list.querySelectorAll('thead th[data-key]').forEach(th => {
@@ -1011,11 +1169,15 @@ function renderTable(entries, list){
 
 /* ---------------- User colors (for visual distinction) ---------------- */
 const USER_COLORS = ['#6FA8DC', '#C77DFF', '#4FB286', '#E8A33D', '#E8637A', '#5FBFD9', '#B3D94F', '#F28FB2'];
-function getUserColor(name){
+function hashColor(name){
   if(!name) return '#8FBFBF';
   let hash = 0;
   for(let i = 0; i < name.length; i++){ hash = (hash * 31 + name.charCodeAt(i)) >>> 0; }
   return USER_COLORS[hash % USER_COLORS.length];
+}
+function getUserColor(name){
+  if(name && typeof userColors !== 'undefined' && userColors[name]) return userColors[name];
+  return hashColor(name);
 }
 function getInitial(name){
   return (name || '?').trim().charAt(0).toUpperCase() || '?';
